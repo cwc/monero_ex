@@ -42,6 +42,20 @@ defmodule Monero.Wallet do
   end
 
   @doc """
+  Return a list of transfers.
+
+  Args:
+  * `transfer_types` - At least one of `[:in, :out, :pending, :failed, :pool]`
+  * `options` - Additional parameters for the `get_transfers` method as defined by the wallet RPC docs
+  """
+  @type get_transfers_transfer_type :: :in | :out | :pending | :failed | :pool
+  @spec get_transfers(list(get_transfers_transfer_type), keyword()) :: Monero.Operation.Query.t
+  def get_transfers(transfer_types \\ [:in, :out, :pending, :failed, :pool], options \\ []) do
+    transfer_types = for t <- transfer_types, do: {t, true}
+    request("get_transfers", Enum.into(Keyword.merge(transfer_types, options), %{}))
+  end
+
+  @doc """
   Create a new wallet. You need to have set the argument `--wallet-dir` when
   launching monero-wallet-rpc to make this work.
 
